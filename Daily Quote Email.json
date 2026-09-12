@@ -1,0 +1,100 @@
+{
+  "name": "Daily Quote Email",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -256,
+        0
+      ],
+      "id": "fba51a11-0e0c-4508-90af-7eed6f2715c9",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "url": "https://zenquotes.io/api/random",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        -32,
+        0
+      ],
+      "id": "f4195e1c-ddc6-4e7e-9ebb-221017f52d2a",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "sendTo": "mehkanfayyaz22@gmail.com",
+        "subject": "Daily Quote of the Day",
+        "message": "={{ $json.q }} - {{ $json.a }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        192,
+        0
+      ],
+      "id": "f8ff76a7-4ec3-48d2-9e0b-e3524814d828",
+      "name": "Send a message",
+      "webhookId": "d6e72503-b0eb-495c-bfd3-c73911d5225e",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "OMHmVB3abUBzG8JF",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "fc9f83c5-31ae-45e4-9009-7202d993a128",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "18007e8de4e5c99c23afa30d010bb7d3b19d52372970ab4b2bfe8ecb262d8844"
+  },
+  "nodeGroups": [],
+  "id": "NI27PFMkFkK2Y09P",
+  "tags": []
+}

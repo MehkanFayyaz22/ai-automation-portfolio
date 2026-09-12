@@ -1,0 +1,251 @@
+{
+  "name": "Feedback Alert System",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Customer Feedback",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Your Feedback",
+              "fieldType": "textarea"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        -368,
+        -48
+      ],
+      "id": "862edd31-900f-4bb2-acf1-c029b0f1c76d",
+      "name": "On form submission",
+      "webhookId": "1bfdc08a-dd16-4306-aea5-0f26379abafa"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Analyze this customer feedback and respond with ONLY one word: Positive or Negative. Feedback: {{ $json['Your Feedback']}}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -144,
+        -48
+      ],
+      "id": "fa424b39-8c1e-4c92-a409-55b99bb2d6eb",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        -288,
+        160
+      ],
+      "id": "b640262f-233e-4041-8a0d-18f4995eccf6",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "DBFA0IsnayHvMlkm",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "2c4e99f4-b5af-42e6-8be2-c7d6773c2dc9",
+              "leftValue": "={{ $json.output}}",
+              "rightValue": "Negative",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        224,
+        -48
+      ],
+      "id": "c3a8dfbe-d8f8-4604-bc43-e9a4f74ec49c",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "sendTo": "mehkanfayyaz22@gmail.com",
+        "subject": "Negative Feedback Alert",
+        "message": "=A customer left negative feedback: {{ $('On form submission').item.json['Your Feedback'] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        448,
+        -144
+      ],
+      "id": "ab24641c-ce76-4398-b733-458f3481be06",
+      "name": "Send a message",
+      "webhookId": "87327593-dac3-42bb-a062-dddbb5413d86",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "OMHmVB3abUBzG8JF",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1HanFkrkb_TKlKk1CIS6kKxDIc1urRuPIghF6YV6XE1U",
+          "mode": "list",
+          "cachedResultName": "Untitled spreadsheet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HanFkrkb_TKlKk1CIS6kKxDIc1urRuPIghF6YV6XE1U/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1HanFkrkb_TKlKk1CIS6kKxDIc1urRuPIghF6YV6XE1U/edit?gid=6699252#gid=6699252",
+          "mode": "url"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Feedback": "= {{ $('On form submission').item.json['Your Feedback'] }}",
+            "Date": "= {{ $now }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Feedback",
+              "displayName": "Feedback",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        448,
+        48
+      ],
+      "id": "1d53d752-2518-4074-bf3b-3d5396a0b5c3",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "g0nmgkvGeKxw5eMC",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "42815745-794b-4fff-9f4e-87293cfb1768",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "18007e8de4e5c99c23afa30d010bb7d3b19d52372970ab4b2bfe8ecb262d8844"
+  },
+  "nodeGroups": [],
+  "id": "ieie168i65bntFbR",
+  "tags": []
+}
