@@ -48,5 +48,32 @@ Critical feedback now reaches the business owner within seconds instead of being
 
 ---
 
-### About these projects
-All three automations were built and tested using a self-hosted n8n instance (Docker), with real OAuth2 integrations to Google Sheets and Gmail, and Google's Gemini API for AI-driven decision-making.
+---
+
+## 4. AI Agent with Calculator Tool
+
+**Tools used:** n8n, Google Gemini API (AI Agent), Calculator Tool
+
+**Problem:**
+AI language models are great at reasoning and conversation, but they sometimes give incorrect answers for precise calculations, since they predict likely text rather than actually computing numbers.
+
+**Solution:**
+I connected a Calculator tool directly to an AI Agent, so the agent can call it automatically whenever a question requires an exact numerical answer, instead of guessing based on patterns.
+
+**Result:**
+The agent now reliably answers precise calculations by using the right tool for the right task — demonstrating how AI agents can be extended with external tools to handle work that language models alone cannot do reliably. This is the same pattern used to build AI agents that can search the web, query databases, or take real actions.
+
+---
+
+## 5. Webhook Data Receiver
+
+**Tools used:** n8n, Webhook (raw HTTP endpoint)
+
+**Problem:**
+Most real business systems — websites, CRMs, payment gateways, booking tools — need to send data into an automation automatically, without a human filling out a form.
+
+**Solution:**
+I built a raw webhook endpoint that accepts JSON data directly from any external system via a standard HTTP POST request, and tested it using real external tools sending live data.
+
+**Result:**
+This is the exact integration pattern used to connect n8n to real-world systems like websites, CRMs, and third-party APIs — the technical foundation behind most professional automation and integration work, beyond simple form-based automations.
