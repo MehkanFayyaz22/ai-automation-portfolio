@@ -97,3 +97,19 @@ Problem: A chatbot that silently fails when the AI model errors out (rate limits
 Solution: I built a chat-based AI assistant using a Basic LLM Chain, with explicit Success and Error output handling. When a request succeeds, the response flows normally; when it fails, the workflow automatically sends a real-time push notification, so failures are caught and visible instead of disappearing silently.
 
 Result: This turns a "hobby" chatbot into a production-ready system — the same reliability pattern (success/error branching + alerting) used in real client automations to guarantee uptime awareness and fast debugging.
+
+## 7. Oil Lab — Sample Tracking System (4-Workflow System)
+
+
+Tools used: n8n, Webhook, Google Sheets API, IF/Conditional Logic
+
+Problem: Labs handling sample testing (like oil analysis) need to track each sample through multiple stages — intake, testing, doctor review, and status checking — but doing this manually across spreadsheets and phone calls leads to lost samples, delayed results, and no single source of truth.
+
+Solution: I built a 4-workflow automation system covering the full sample lifecycle:
+
+Sample Intake — logs each incoming sample into a central Google Sheet the moment it's received.
+Update Status — updates a sample's status (e.g. Purity Testing, Quality Check, Report Ready) via webhook, with conditional logic routing valid vs. invalid status updates.
+Doctor Result Entry — lets a doctor submit test results, which are recorded against the correct sample automatically.
+Check Status — allows anyone to query a sample's current status in real time without contacting the lab directly.
+
+Result: A full sample goes from intake to final report entirely through automated workflows, with zero manual spreadsheet editing and instant status visibility at every stage. This demonstrates a complete, multi-workflow business system — the kind of end-to-end automation clients pay for, not just a single isolated task.
