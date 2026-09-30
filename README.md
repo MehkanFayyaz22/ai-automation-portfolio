@@ -78,7 +78,7 @@ I built a raw webhook endpoint that accepts JSON data directly from any external
 **Result:**
 This is the exact integration pattern used to connect n8n to real-world systems like websites, CRMs, and third-party APIs — the technical foundation behind most professional automation and integration work, beyond simple form-based automations.
 
-6. RAG — Chat with Documents
+## 6. RAG Chat with documents.
 
 Tools used: n8n, Google Gemini (Chat Model + Embeddings), Simple Vector Store, AI Agent, Form Trigger
 
