@@ -78,7 +78,7 @@ I built a raw webhook endpoint that accepts JSON data directly from any external
 **Result:**
 This is the exact integration pattern used to connect n8n to real-world systems like websites, CRMs, and third-party APIs — the technical foundation behind most professional automation and integration work, beyond simple form-based automations.
 
-## 6. RAG Chat with documents.
+## 6. RAG Chat with documents
 
 Tools used: n8n, Google Gemini (Chat Model + Embeddings), Simple Vector Store, AI Agent, Form Trigger
 
@@ -87,3 +87,13 @@ Problem: Businesses often have documents (PDFs, manuals, policies, FAQs) that cu
 Solution: I built a two-stage RAG (Retrieval-Augmented Generation) system. First, documents are converted into embeddings and indexed into a vector store. Then, an AI Agent connected to that same vector store answers questions submitted through a form by retrieving the exact relevant document content before generating a response, instead of relying on general knowledge alone.
 
 Result: Users get accurate, document-grounded answers instead of generic AI guesses. This is the same architecture used to power internal knowledge-base bots, customer support assistants, and document Q&A tools — one of the most in-demand automation patterns for real businesses today.
+
+## 7. AI Chatbot with Error Handling
+
+Tools used: n8n, Google Gemini Chat Model, Basic LLM Chain, HTTP Request (ntfy.sh), Chat Trigger
+
+Problem: A chatbot that silently fails when the AI model errors out (rate limits, bad input, API downtime) leaves the developer unaware of the failure — and the end user gets no response with no explanation, which is unacceptable in a real client-facing system.
+
+Solution: I built a chat-based AI assistant using a Basic LLM Chain, with explicit Success and Error output handling. When a request succeeds, the response flows normally; when it fails, the workflow automatically sends a real-time push notification, so failures are caught and visible instead of disappearing silently.
+
+Result: This turns a "hobby" chatbot into a production-ready system — the same reliability pattern (success/error branching + alerting) used in real client automations to guarantee uptime awareness and fast debugging.
