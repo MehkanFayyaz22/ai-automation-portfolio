@@ -1,0 +1,116 @@
+{
+  "name": "Oil Lab - Check Status",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "check-status",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -416,
+        -96
+      ],
+      "id": "c2143f03-41b0-4d29-926e-584546837f89",
+      "name": "Webhook",
+      "webhookId": "a52549e8-3ee3-4d7f-8abc-a6eeca382bb8"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1HanFkrkb_TKlKk1CIS6kKxDIc1urRuPIghF6YV6XE1U",
+          "mode": "list",
+          "cachedResultName": "Untitled spreadsheet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HanFkrkb_TKlKk1CIS6kKxDIc1urRuPIghF6YV6XE1U/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1129669930,
+          "mode": "list",
+          "cachedResultName": "Oil Samples",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HanFkrkb_TKlKk1CIS6kKxDIc1urRuPIghF6YV6XE1U/edit#gid=1129669930"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "Sample ID",
+              "lookupValue": "={{ $json.body.sampleId }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -192,
+        -96
+      ],
+      "id": "f8570ddd-9b55-4596-b267-0eed6bc9ecbf",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "g0nmgkvGeKxw5eMC",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        32,
+        -96
+      ],
+      "id": "4d219849-7094-480f-8f75-da819cf69ae4",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "8337bf86-a6c4-489a-97e9-2cf8ee9d4192",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "18007e8de4e5c99c23afa30d010bb7d3b19d52372970ab4b2bfe8ecb262d8844"
+  },
+  "nodeGroups": [],
+  "id": "k5r1ZoyoQ31EZcb2",
+  "tags": []
+}

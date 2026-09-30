@@ -1,0 +1,191 @@
+{
+  "name": "Oil Lab - Doctor Result Entry",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "doctor-result",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -400,
+        -64
+      ],
+      "id": "aa560191-3d2c-43bc-bbd8-9f8e7b34de0b",
+      "name": "Webhook",
+      "webhookId": "8bcaef49-fce3-4076-a21e-e480fd0a8958"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1HanFkrkb_TKlKk1CIS6kKxDIc1urRuPIghF6YV6XE1U",
+          "mode": "list",
+          "cachedResultName": "Untitled spreadsheet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HanFkrkb_TKlKk1CIS6kKxDIc1urRuPIghF6YV6XE1U/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1129669930,
+          "mode": "list",
+          "cachedResultName": "Oil Samples",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HanFkrkb_TKlKk1CIS6kKxDIc1urRuPIghF6YV6XE1U/edit#gid=1129669930"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Result": "={{ $json.body.result }}",
+            "Status": "Report Ready",
+            "Sample ID": "={{ $json.body.sampleId }}"
+          },
+          "matchingColumns": [
+            "Sample ID"
+          ],
+          "schema": [
+            {
+              "id": "Sample ID",
+              "displayName": "Sample ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Customer Name",
+              "displayName": "Customer Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Product Type",
+              "displayName": "Product Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Result",
+              "displayName": "Result",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -176,
+        -64
+      ],
+      "id": "4f848bf5-c11b-4dda-bfa9-e8b4553c55c8",
+      "name": "Update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "g0nmgkvGeKxw5eMC",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{ \"success\": true, \"message\": \"Result recorded, report ready\" }",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        48,
+        -64
+      ],
+      "id": "d4e26376-6df6-4df1-a2ad-83a22d8ee9bb",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "83de9d7f-f651-4cbd-b84f-acfd88b0ce1d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "18007e8de4e5c99c23afa30d010bb7d3b19d52372970ab4b2bfe8ecb262d8844"
+  },
+  "nodeGroups": [],
+  "id": "nfMOkpnHFMK6ZLVS",
+  "tags": []
+}

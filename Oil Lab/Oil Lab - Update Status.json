@@ -1,0 +1,258 @@
+{
+  "name": "Oil Lab - Update Status",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "update-status",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -624,
+        -176
+      ],
+      "id": "0ca6b0b1-bf09-451d-bed4-e66143d0e40b",
+      "name": "Webhook",
+      "webhookId": "86cb44f8-f30a-400c-b92c-2fea61aed3d2"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "{ \"success\": true, \"message\": \"Status updated\" }",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        32,
+        -192
+      ],
+      "id": "0ba6ece9-d277-4ee4-8662-d4717d04aabe",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "1HanFkrkb_TKlKk1CIS6kKxDIc1urRuPIghF6YV6XE1U",
+          "mode": "list",
+          "cachedResultName": "Untitled spreadsheet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HanFkrkb_TKlKk1CIS6kKxDIc1urRuPIghF6YV6XE1U/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1129669930,
+          "mode": "list",
+          "cachedResultName": "Oil Samples",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HanFkrkb_TKlKk1CIS6kKxDIc1urRuPIghF6YV6XE1U/edit#gid=1129669930"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Sample ID": "={{ $json.body.sampleId }}",
+            "Status": "={{ $json.body.status }}"
+          },
+          "matchingColumns": [
+            "Sample ID"
+          ],
+          "schema": [
+            {
+              "id": "Sample ID",
+              "displayName": "Sample ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Customer Name",
+              "displayName": "Customer Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Product Type",
+              "displayName": "Product Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Result",
+              "displayName": "Result",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "row_number",
+              "displayName": "row_number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "readOnly": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -176,
+        -192
+      ],
+      "id": "a8abba07-30fa-4273-bd57-43b6f0dce535",
+      "name": "Update row in sheet",
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "g0nmgkvGeKxw5eMC",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "fc90c7c8-daad-4259-be42-45e8948cc456",
+              "leftValue": "={{ ['Purity Testing','Quality Check','Report Ready'].includes($json.body.status.trim()) }}",
+              "rightValue": " Purity Testing",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -432,
+        -176
+      ],
+      "id": "e992eec2-dcae-4d1a-9f4a-6d782de1c6b7",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": " { \"success\": false, \"message\": \"Invalid status value. Sheet not updated.\" }",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        -432,
+        48
+      ],
+      "id": "1e9305ff-09a2-47c4-9428-c5e7e169f87e",
+      "name": "Respond to Webhook2"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond to Webhook2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "3adb3bf4-f0ed-4812-a8da-b397d07e1943",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "18007e8de4e5c99c23afa30d010bb7d3b19d52372970ab4b2bfe8ecb262d8844"
+  },
+  "nodeGroups": [],
+  "id": "s2AER5wdN0PTyNcz",
+  "tags": []
+}

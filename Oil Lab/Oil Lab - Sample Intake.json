@@ -1,0 +1,214 @@
+{
+  "name": "Oil Lab - Sample Intake",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "sample-intake",
+        "responseMode": "responseNode",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -464,
+        -96
+      ],
+      "id": "4bc0ddaa-71ab-438f-a896-4a95c5328181",
+      "name": "Webhook",
+      "webhookId": "73af44b4-6b74-4f80-be54-1b7906ada368"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e2a95122-9017-4255-b64b-48a304d32775",
+              "name": "Sample ID",
+              "value": "={{ (\"OIL\" + (Math.floor(Math.random() * 9000) + 1000)).trim() }}",
+              "type": "string"
+            }
+          ]
+        },
+        "includeOtherFields": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        -288,
+        -96
+      ],
+      "id": "10b227ee-c9a9-4849-8865-8ec21f4e9f36",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1HanFkrkb_TKlKk1CIS6kKxDIc1urRuPIghF6YV6XE1U",
+          "mode": "list",
+          "cachedResultName": "Untitled spreadsheet",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1HanFkrkb_TKlKk1CIS6kKxDIc1urRuPIghF6YV6XE1U/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1HanFkrkb_TKlKk1CIS6kKxDIc1urRuPIghF6YV6XE1U/edit?gid=1129669930#gid=1129669930",
+          "mode": "url"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Sample ID": "={{ $json['Sample ID'] }}",
+            "Customer Name": "={{ $json.body.customerName }}",
+            "Product Type": "= {{ $json.body.productType }}",
+            "Status": "Received",
+            "Timestamp": "={{ $now }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Sample ID",
+              "displayName": "Sample ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Customer Name",
+              "displayName": "Customer Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Product Type",
+              "displayName": "Product Type",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Result",
+              "displayName": "Result",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Timestamp",
+              "displayName": "Timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        -112,
+        -96
+      ],
+      "id": "bccfbe3c-e565-492b-b4b3-9604a9362532",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "g0nmgkvGeKxw5eMC",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={\n  \"sampleId\": \"{{ $json['Sample ID'] }}\",\n  \"customerName\": \"{{ $json['Customer Name'] }}\",\n  \"productType\": \"{{ $json['Product Type'] }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        80,
+        -96
+      ],
+      "id": "7ad4a270-1abb-438c-8e30-ab440b5ac1ca",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "8d1b46a8-c82f-498f-804b-303e3deb6172",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "18007e8de4e5c99c23afa30d010bb7d3b19d52372970ab4b2bfe8ecb262d8844"
+  },
+  "nodeGroups": [],
+  "id": "aHrxc6hxClT8Kkca",
+  "tags": []
+}
