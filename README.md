@@ -77,3 +77,13 @@ I built a raw webhook endpoint that accepts JSON data directly from any external
 
 **Result:**
 This is the exact integration pattern used to connect n8n to real-world systems like websites, CRMs, and third-party APIs — the technical foundation behind most professional automation and integration work, beyond simple form-based automations.
+
+6. RAG — Chat with Documents
+
+Tools used: n8n, Google Gemini (Chat Model + Embeddings), Simple Vector Store, AI Agent, Form Trigger
+
+Problem: Businesses often have documents (PDFs, manuals, policies, FAQs) that customers or employees need answers from, but manually searching through them every time is slow and inefficient — and a generic AI chatbot without access to that specific data will just guess or give a generic answer.
+
+Solution: I built a two-stage RAG (Retrieval-Augmented Generation) system. First, documents are converted into embeddings and indexed into a vector store. Then, an AI Agent connected to that same vector store answers questions submitted through a form by retrieving the exact relevant document content before generating a response, instead of relying on general knowledge alone.
+
+Result: Users get accurate, document-grounded answers instead of generic AI guesses. This is the same architecture used to power internal knowledge-base bots, customer support assistants, and document Q&A tools — one of the most in-demand automation patterns for real businesses today.
