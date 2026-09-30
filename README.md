@@ -98,7 +98,7 @@ Solution: I built a chat-based AI assistant using a Basic LLM Chain, with explic
 
 Result: This turns a "hobby" chatbot into a production-ready system — the same reliability pattern (success/error branching + alerting) used in real client automations to guarantee uptime awareness and fast debugging.
 
-## 7. Oil Lab — Sample Tracking System (4-Workflow System)
+## 8. Oil Lab — Sample Tracking System (4-Workflow System)
 
 
 Tools used: n8n, Webhook, Google Sheets API, IF/Conditional Logic
