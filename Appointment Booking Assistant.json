@@ -1,0 +1,479 @@
+{
+  "name": "Appointment Booking Assistant",
+  "nodes": [
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Current date and time: {{ $now }}\n\nCustomer message: {{ $json.Message }}\n\nExtract the appointment date and time from this message.\nThe customer may write in English, Urdu, or Roman Urdu.\nReturn only this JSON and nothing else:\n{\"date\": \"YYYY-MM-DD\", \"time\": \"HH:MM\"}\n\nIf the message does not contain a clear date or time, return exactly:\n{\"date\": null, \"time\": null}",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        -800,
+        -208
+      ],
+      "id": "544edca5-9963-4f38-98b2-5f0f2e890768",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        -736,
+        -48
+      ],
+      "id": "74caea5f-8b9e-4008-9ecc-a8f783ce6e31",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "DBFA0IsnayHvMlkm",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $input.first().json.text || '';\nconst form = $('On form submission').first().json;\n\nlet data = {};\ntry {\n  const clean = raw.replace(/```json|```/g, '').trim();\n  data = JSON.parse(clean);\n} catch (e) {\n  data = {};\n}\n\nlet valid = Boolean(\n  data.date && data.time &&\n  /^\\d{4}-\\d{2}-\\d{2}$/.test(data.date) &&\n  /^\\d{2}:\\d{2}$/.test(data.time)\n);\n\nlet start = '';\nlet end = '';\n\nif (valid) {\n  const s = new Date(`${data.date}T${data.time}:00+05:00`);\n  if (isNaN(s.getTime())) {\n    valid = false;\n  } else {\n    start = s.toISOString();\n    end = new Date(s.getTime() + 60 * 60 * 1000).toISOString();\n  }\n}\n\nreturn [{\n  json: {\n    name: form.Name,\n    message: form.Message,\n    date: data.date || '',\n    time: data.time || '',\n    start,\n    end,\n    valid\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -512,
+        -208
+      ],
+      "id": "2f35162a-d1b1-4019-96a3-1619e8586491",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "resource": "calendar",
+        "calendar": {
+          "__rl": true,
+          "mode": "id",
+          "value": "YOUR_EMAIL@gmail.com",
+          "__regex": "(^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*)"
+        },
+        "timeMin": "={{ $json.start }}",
+        "timeMax": "={{ $json.end }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        -128,
+        -224
+      ],
+      "id": "6fa8f5a0-1711-4c32-b0b3-b268b8c926d5",
+      "name": "Get availability in a calendar",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "tFi4L5p5d8jBHxYo",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "7b38d781-79b9-45a1-93db-d7e25e5f4383",
+              "leftValue": "={{ $json.available }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        48,
+        -224
+      ],
+      "id": "9c2e1eda-95bb-46e5-ab0b-95f4c3427526",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "mode": "id",
+          "value": "mehkanfayyaz22@gmail.com",
+          "__regex": "(^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*)"
+        },
+        "start": "={{ $('Code in JavaScript').item.json.start }}",
+        "end": "={{ $('Code in JavaScript').item.json.end }}",
+        "additionalFields": {
+          "summary": "=Appointment: {{ $('Code in JavaScript').item.json.name }}"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        272,
+        -240
+      ],
+      "id": "bd6d8ff3-1914-4d5b-a85a-e6f8fef85bda",
+      "name": "Create an event",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "tFi4L5p5d8jBHxYo",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "YOUR_SHEET_ID": {
+          "__rl": true,
+          "value": "1miiG4Pjssc6YNp2I93OdRqFn-a9a9ahz_0WUJjCvi1Q",
+          "mode": "list",
+          "cachedResultName": "AI Responses",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1miiG4Pjssc6YNp2I93OdRqFn-a9a9ahz_0WUJjCvi1Q/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2133254107,
+          "mode": "list",
+          "cachedResultName": "Appointments",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1miiG4Pjssc6YNp2I93OdRqFn-a9a9ahz_0WUJjCvi1Q/edit#gid=2133254107"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Name": "={{ $('Code in JavaScript').item.json.name }}",
+            "Message": "={{ $('Code in JavaScript').item.json.message }}",
+            "Date": "={{ $('Code in JavaScript').item.json.date }}",
+            "Time": "={{ $('Code in JavaScript').item.json.time }}",
+            "Status": "Booked"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Message",
+              "displayName": "Message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Time",
+              "displayName": "Time",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Status",
+              "displayName": "Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        416,
+        -240
+      ],
+      "id": "547b6282-143b-4472-86ab-1e59349def17",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "g0nmgkvGeKxw5eMC",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "formTitle": "Book an appointment",
+        "formDescription": "Enter your name and tell us when you'd like to visit. For example: \"Tomorrow at 4 PM\".",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Name"
+            },
+            {
+              "fieldLabel": "Message"
+            }
+          ]
+        },
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.6,
+      "position": [
+        -928,
+        -208
+      ],
+      "id": "c55b87c4-2407-4df8-ad90-d1e395acb3e7",
+      "name": "On form submission",
+      "webhookId": "62003631-a42b-4f95-9ffe-d808fcb2848d"
+    },
+    {
+      "parameters": {
+        "operation": "completion",
+        "completionTitle": "Appointment Confirmed ✅",
+        "completionMessage": "Your appointment has been booked. We look forward to seeing you!",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.5,
+      "position": [
+        576,
+        -240
+      ],
+      "id": "5f5b9d67-654e-461a-9ebd-3570d1a026ab",
+      "name": "Form",
+      "webhookId": "df569b56-cd1c-4b5f-bfa0-dc9bab4de97e"
+    },
+    {
+      "parameters": {
+        "operation": "completion",
+        "completionTitle": "That Time Slot Is Taken",
+        "completionMessage": "Sorry, this time is already booked. Please submit the form again with a different time.",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.5,
+      "position": [
+        160,
+        0
+      ],
+      "id": "01f7c547-0752-47aa-8cce-d85e510cac4a",
+      "name": "Form1",
+      "webhookId": "43b9516f-6451-4b5b-9d30-089fa8bb7457"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "acf1ad27-7487-45eb-bcb7-424a35d36e5f",
+              "leftValue": "={{ $json.valid }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -336,
+        -208
+      ],
+      "id": "51a046a5-9ac8-4f84-8b97-5f5daabec2a0",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "operation": "completion",
+        "completionTitle": "We Couldn't Find a Date or Time",
+        "completionMessage": "Please submit the form again and include a date and time, for example: \"Tomorrow at 4 PM\"",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.form",
+      "typeVersion": 2.5,
+      "position": [
+        -224,
+        32
+      ],
+      "id": "a4e1de3b-33cf-482d-a4ad-6da1ba116053",
+      "name": "Form2",
+      "webhookId": "3a013740-e321-4ef6-ac37-bf25c7ed6193"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get availability in a calendar": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Create an event",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Form1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create an event": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Form",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Get availability in a calendar",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Form2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "2d2f7259-c408-4dae-bb2c-098bf4b1065c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "18007e8de4e5c99c23afa30d010bb7d3b19d52372970ab4b2bfe8ecb262d8844"
+  },
+  "nodeGroups": [],
+  "id": "X6YkIGZOoFPcKTXY",
+  "tags": []
+}
