@@ -113,3 +113,13 @@ Doctor Result Entry — lets a doctor submit test results, which are recorded ag
 Check Status — allows anyone to query a sample's current status in real time without contacting the lab directly.
 
 Result: A full sample goes from intake to final report entirely through automated workflows, with zero manual spreadsheet editing and instant status visibility at every stage. This demonstrates a complete, multi-workflow business system — the kind of end-to-end automation clients pay for, not just a single isolated task.
+
+## 9. AI Appointment Booking Assistant
+
+Tools used: n8n, Form Trigger, Google Gemini (Basic LLM Chain), Code Node (JavaScript), IF/Conditional Logic, Google Calendar API, Google Sheets API, OAuth2
+
+Problem: Clinics, salons, labs, and other service businesses often take appointments through phone calls and chat messages. Someone has to read each request, check the diary, reply, and write the booking down by hand. This is slow, and it leads to double bookings and appointments that never get recorded in one place.
+
+Solution: I built an AI booking assistant where a customer fills in a simple form with their name and a message like "Tomorrow at 4 PM". The workflow uses an AI model to understand the date and time (including Urdu and Roman Urdu messages), checks Google Calendar to see if that slot is free, and then branches: if the slot is free, it books the appointment, records it in Google Sheets, and shows a confirmation page; if the slot is taken, the customer is told right away to pick another time. A validation step also catches messages with no clear date or time, so the customer gets a helpful prompt instead of a failed request.
+
+Result: Customers get an instant answer, double bookings are prevented because every request is checked against the live calendar, and every booking is saved automatically in one spreadsheet. This workflow combines AI language understanding, calendar integration, conditional logic, and input validation — the same pattern used in real booking systems for clinics, salons, and service businesses.
