@@ -123,3 +123,22 @@ Problem: Clinics, salons, labs, and other service businesses often take appointm
 Solution: I built an AI booking assistant where a customer fills in a simple form with their name and a message like "Tomorrow at 4 PM". The workflow uses an AI model to understand the date and time (including Urdu and Roman Urdu messages), checks Google Calendar to see if that slot is free, and then branches: if the slot is free, it books the appointment, records it in Google Sheets, and shows a confirmation page; if the slot is taken, the customer is told right away to pick another time. A validation step also catches messages with no clear date or time, so the customer gets a helpful prompt instead of a failed request.
 
 Result: Customers get an instant answer, double bookings are prevented because every request is checked against the live calendar, and every booking is saved automatically in one spreadsheet. This workflow combines AI language understanding, calendar integration, conditional logic, and input validation — the same pattern used in real booking systems for clinics, salons, and service businesses.
+
+## 10. AI Customer Support Chatbot for an Oil Testing Lab
+
+**Tools used:** n8n (self-hosted with Docker), Google Gemini API (AI Agent), Window Buffer Memory, Chat Trigger, Google Sheets API
+
+**Problem:** Testing labs get the same questions again and again: "What is the rate for this test?", "How long does the report take?", "How much oil do I need to send?" Staff spend hours answering them by phone and messages, and customers who message after working hours wait until the next day for a reply.
+
+**Solution:** I built an AI chatbot that answers customer questions instantly, using only the lab's own information (services, rates, timings, turnaround time and sample requirements). It replies in the customer's own language (English, Urdu or Roman Urdu) and remembers the earlier messages in the conversation, so follow-up questions like "and how many days does it take?" are understood correctly. If a customer asks something outside the lab's information, the bot does not guess. It tells the customer that a team member will contact them and collects their name and phone number. Every question and answer is saved automatically to a Google Sheet, so the lab can review enquiries and follow up on potential customers.
+
+**How it works:**
+1. A customer sends a message through the chat.
+2. The AI Agent reads the message together with the lab's rules and information (the system message) and the recent conversation (memory).
+3. Google Gemini writes the reply, which is shown to the customer.
+4. The date, session ID, customer message and AI reply are added as a new row in Google Sheets.
+
+**Safety rules built into the prompt:** the bot never invents prices or timings, never interprets test results or gives technical advice, never confirms final prices or discounts, and hands the customer over to the team whenever it is unsure. The AI Agent node is also set to retry automatically if the AI service is briefly unavailable.
+
+**Result:** A working demo chatbot that answers common lab questions instantly, keeps conversations in context and records every enquiry in a spreadsheet. The demo uses a sample lab ("PetroCheck") with example rates, and it can be adapted to a real lab by replacing the information in the system message. The same pattern works for clinics, schools, shops and any business that answers repeated customer questions.
+
